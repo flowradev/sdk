@@ -83,8 +83,8 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          npm publish --access public --no-git-checks --prefix typescript
-          npm publish --access public --no-git-checks --prefix cli
+          npm publish --access public --no-git-checks ./typescript
+          npm publish --access public --no-git-checks ./cli
 
       - name: Publish PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
