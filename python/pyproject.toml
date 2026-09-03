@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "flowra"
+version = "0.1.0"
+description = "Official Python SDK for the Flowra API"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Flowra" }]
+keywords = ["flowra", "sdk", "agents", "workflows", "tools"]
+dependencies = []
+
+[project.urls]
+Homepage = "https://flowra.dev"
+Documentation = "https://docs.flowra.dev"
+Repository = "https://github.com/flowradev/sdk"
+Issues = "https://github.com/flowradev/sdk/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+flowra = ["py.typed"]

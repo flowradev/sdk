@@ -1,0 +1,42 @@
+{
+  "name": "@flowra/cli",
+  "version": "0.1.0",
+  "description": "Thin Flowra CLI for terminal agents: login, discover, connect, execute",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "flowra": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc && chmod +x dist/index.js",
+    "flowra": "node dist/index.js",
+    "test": "node --experimental-strip-types --test src/args.test.ts src/config.test.ts src/redact.test.ts src/http.test.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.3",
+    "typescript": "^5.8.2"
+  },
+  "keywords": [
+    "flowra",
+    "cli",
+    "agents",
+    "mcp"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/flowradev/sdk.git",
+    "directory": "cli"
+  },
+  "homepage": "https://flowra.dev",
+  "bugs": {
+    "url": "https://github.com/flowradev/sdk/issues"
+  }
+}
