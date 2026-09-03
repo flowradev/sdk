@@ -6,13 +6,17 @@ Never invent tool slugs. Typical loop: **discover → connect → execute**.
 
 ## Install
 
-Until the package is on npm, from this repository:
+```bash
+pnpm add -g @flowra/cli
+flowra --help
+```
+
+From this repository:
 
 ```bash
 pnpm --dir cli install
 pnpm --dir cli build
 cd cli && npm link
-flowra --help
 ```
 
 Without a global link: `pnpm --dir cli flowra --help` or `node cli/dist/index.js`.

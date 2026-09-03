@@ -199,26 +199,24 @@ If `connect` returns `redirectUrl`, open it, then run connect again.
 
 ## Install
 
-Not on npm / PyPI yet. **Do not** `pip install flowra` from PyPI — that name is unrelated.
+**Do not** `pip install flowra` — that PyPI name is unrelated. The Python package is `flowra-sdk` (import stays `flowra`).
 
 **TypeScript**
 
 ```bash
-git clone https://github.com/flowradev/sdk.git
-cd sdk/typescript && pnpm install && pnpm build
-pnpm add /path/to/sdk/typescript   # in your app
+pnpm add @flowra/sdk
 ```
 
 **Python** (3.10+)
 
 ```bash
-pip install "git+https://github.com/flowradev/sdk.git#subdirectory=python"
+pip install flowra-sdk
 ```
 
 **CLI**
 
 ```bash
-cd sdk/cli && pnpm install && pnpm build && npm link
+pnpm add -g @flowra/cli
 ```
 
 ---

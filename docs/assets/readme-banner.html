@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Flowra Official SDK</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #0a0a0c;
+      --panel: #141418;
+      --panel-2: #1c1c22;
+      --line: rgba(232, 176, 74, 0.24);
+      --gold: #e8b04a;
+      --cream: #f6f1e8;
+      --mute: #a39889;
+      --dim: #746c61;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 2560px;
+      height: 1440px;
+      overflow: hidden;
+      background: var(--ink);
+    }
+    .stage {
+      width: 1280px;
+      height: 720px;
+      transform: scale(2);
+      transform-origin: 0 0;
+      position: relative;
+      color: var(--cream);
+      font-family: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      background:
+        radial-gradient(ellipse 62% 70% at 94% -8%, rgba(187, 116, 0, 0.32), transparent 56%),
+        radial-gradient(ellipse 40% 50% at 6% 108%, rgba(187, 116, 0, 0.08), transparent 50%),
+        var(--ink);
+      overflow: hidden;
+    }
+    .brand {
+      position: absolute;
+      top: 36px;
+      left: 48px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .mark { width: 48px; height: 48px; flex: none; }
+    .word h1 {
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -0.045em;
+      line-height: 1;
+    }
+    .word p {
+      margin-top: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--mute);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+    .langs {
+      position: absolute;
+      top: 48px;
+      right: 48px;
+      display: flex;
+      gap: 8px;
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--mute);
+    }
+    .langs span {
+      border: 1px solid var(--line);
+      background: rgba(20, 20, 24, 0.72);
+      padding: 7px 12px;
+      border-radius: 999px;
+    }
+    .headline {
+      position: absolute;
+      top: 104px;
+      left: 48px;
+      right: 48px;
+    }
+    .headline h2 {
+      font-size: 40px;
+      font-weight: 600;
+      letter-spacing: -0.04em;
+      line-height: 1.05;
+    }
+    .headline h2 em {
+      font-style: normal;
+      color: var(--gold);
+    }
+    .headline p {
+      margin-top: 8px;
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--mute);
+      letter-spacing: -0.015em;
+    }
+    .wires {
+      position: absolute;
+      inset: 0;
+      width: 1280px;
+      height: 720px;
+      pointer-events: none;
+    }
+    .card {
+      position: absolute;
+      top: 204px;
+      width: 392px;
+      height: 424px;
+      background: linear-gradient(180deg, rgba(28, 28, 34, 0.96), rgba(14, 14, 18, 0.96));
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: 0 28px 64px rgba(0, 0, 0, 0.4);
+      overflow: hidden;
+    }
+    .card-left { left: 48px; }
+    .card-right { right: 48px; }
+    .card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 20px 14px;
+      border-bottom: 1px solid rgba(232, 176, 74, 0.14);
+    }
+    .kicker {
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+    .code {
+      padding: 22px 22px 0;
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 16.5px;
+      line-height: 1.72;
+      color: #d9d1c4;
+    }
+    .kw { color: var(--gold); }
+    .fn { color: var(--cream); }
+    .str { color: #d3923a; }
+    .cm { color: #6f675c; }
+    .hub {
+      position: absolute;
+      left: 456px;
+      top: 286px;
+      width: 368px;
+      height: 260px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+    }
+    .hub-ring {
+      width: 132px;
+      height: 132px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: radial-gradient(circle at 50% 38%, rgba(232, 176, 74, 0.28), rgba(10, 10, 12, 0.15) 68%);
+      box-shadow: 0 0 0 1px rgba(232, 176, 74, 0.34), 0 0 56px rgba(187, 116, 0, 0.32);
+    }
+    .hub-ring svg { width: 80px; height: 80px; }
+    .hub-labels { display: flex; gap: 8px; }
+    .pill {
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--cream);
+      border: 1px solid var(--line);
+      background: rgba(20, 20, 24, 0.9);
+      padding: 7px 12px;
+      border-radius: 999px;
+    }
+    .pill.gold {
+      color: #1a1206;
+      background: var(--gold);
+      border-color: transparent;
+    }
+    .apps {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      padding: 20px 16px 22px;
+    }
+    .app {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      height: 96px;
+      padding: 0 18px;
+      border-radius: 16px;
+      background: var(--panel-2);
+      border: 1px solid rgba(246, 241, 232, 0.06);
+    }
+    .app svg { width: 34px; height: 34px; flex: none; }
+    .app span {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--cream);
+      letter-spacing: -0.02em;
+    }
+    .app.more span:last-child { color: var(--gold); }
+    .gate {
+      position: absolute;
+      left: 808px;
+      top: 393px;
+      transform: translate(-50%, -50%);
+      z-index: 3;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #121214;
+      border: 1px solid rgba(232, 176, 74, 0.45);
+      padding: 7px 12px 7px 10px;
+      border-radius: 999px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    }
+    .gate-diamond {
+      width: 11px;
+      height: 11px;
+      background: var(--gold);
+      transform: rotate(45deg);
+      border-radius: 2px;
+    }
+    .gate span {
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+    .footer {
+      position: absolute;
+      left: 48px;
+      right: 48px;
+      bottom: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--dim);
+      font-size: 15px;
+      font-weight: 500;
+    }
+    .footer-meta { display: flex; gap: 20px; }
+    .footer-meta span::before {
+      content: "";
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--gold);
+      margin-right: 8px;
+      vertical-align: 1px;
+    }
+    .url {
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 14px;
+      letter-spacing: 0.03em;
+      color: var(--mute);
+    }
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <div class="brand">
+      <svg class="mark" viewBox="0 0 48 48" aria-hidden="true">
+        <g fill="#e8b04a">
+          <path d="M38.56 20.37A15 15 0 1 1 27.63 9.44" fill="none" stroke="#e8b04a" stroke-width="4.6" stroke-linecap="round"/>
+          <rect x="20.5" y="20.5" width="7" height="7" rx="1.8" transform="rotate(45 24 24)"/>
+          <circle cx="38.5" cy="9.5" r="3.1"/>
+        </g>
+      </svg>
+      <div class="word">
+        <h1>Flowra</h1>
+        <p>Official SDK</p>
+      </div>
+    </div>
+
+    <div class="langs">
+      <span>TypeScript</span>
+      <span>Python</span>
+      <span>CLI</span>
+    </div>
+
+    <div class="headline">
+      <h2>Hosted AI agents. <em>Locked workflows.</em></h2>
+      <p>Call Gmail, Slack, GitHub, Notion — 1,000+ apps — from your backend.</p>
+    </div>
+
+    <svg class="wires" viewBox="0 0 1280 720" fill="none" aria-hidden="true">
+      <path d="M440 393 C 488 393, 520 393, 556 393" stroke="#e8b04a" stroke-width="2" stroke-linecap="round"/>
+      <path d="M724 393 C 760 393, 790 393, 840 393" stroke="#e8b04a" stroke-width="2" stroke-linecap="round" stroke-dasharray="5 7"/>
+      <circle cx="440" cy="393" r="3.5" fill="#e8b04a"/>
+      <circle cx="840" cy="393" r="3.5" fill="#e8b04a"/>
+    </svg>
+
+    <section class="card card-left">
+      <div class="card-head">
+        <span class="kicker">Your backend</span>
+      </div>
+      <pre class="code"><span class="kw">import</span> { Flowra } <span class="kw">from</span> <span class="str">'@flowra/sdk'</span>
+
+<span class="kw">const</span> flowra = <span class="kw">new</span> <span class="fn">Flowra</span>({ apiKey })
+
+<span class="kw">await</span> flowra.tools.<span class="fn">execute</span>(slug, {
+  arguments: { to, subject, body }
+})
+
+<span class="cm">// OAuth, approval, ledger — hosted</span></pre>
+    </section>
+
+    <div class="hub">
+      <div class="hub-ring">
+        <svg viewBox="0 0 48 48" aria-hidden="true">
+          <g fill="#e8b04a">
+            <path d="M38.56 20.37A15 15 0 1 1 27.63 9.44" fill="none" stroke="#e8b04a" stroke-width="4.6" stroke-linecap="round"/>
+            <rect x="20.5" y="20.5" width="7" height="7" rx="1.8" transform="rotate(45 24 24)"/>
+            <circle cx="38.5" cy="9.5" r="3.1"/>
+          </g>
+        </svg>
+      </div>
+      <div class="hub-labels">
+        <span class="pill">Agent</span>
+        <span class="pill gold">Workflow</span>
+      </div>
+    </div>
+
+    <div class="gate">
+      <i class="gate-diamond"></i>
+      <span>Approve</span>
+    </div>
+
+    <section class="card card-right">
+      <div class="card-head">
+        <span class="kicker">1,000+ apps</span>
+      </div>
+      <div class="apps">
+        <div class="app">
+          <svg viewBox="0 0 128 128" aria-hidden="true">
+            <path d="M8.7 113.9H29.1V64.4L0 42.6v62.5c0 4.8 3.9 8.8 8.7 8.8z" fill="#4285F4"/>
+            <path d="M98.9 113.9h20.4c4.8 0 8.7-3.9 8.7-8.8V42.6L98.9 64.4v49.5z" fill="#34A853"/>
+            <path d="M98.9 26.6V64.4L128 42.6V30.9c0-10.8-12.3-16.9-20.9-10.5L98.9 26.6z" fill="#FBBC04"/>
+            <path d="M29.1 64.4V26.6L64 52.8l34.9-26.2V64.4L64 90.6 29.1 64.4z" fill="#EA4335"/>
+            <path d="M0 30.9v11.7l29.1 21.8V26.6L20.9 20.5C12.3 14 0 20.2 0 30.9z" fill="#C5221F"/>
+          </svg>
+          <span>Gmail</span>
+        </div>
+        <div class="app">
+          <svg viewBox="0 0 128 128" aria-hidden="true">
+            <path d="M26.9 80.9a13.45 13.45 0 1 1-13.45-13.45H26.9z" fill="#E01E5A"/>
+            <path d="M33.7 80.9a13.45 13.45 0 0 1 26.9 0v33.7a13.45 13.45 0 1 1-26.9 0z" fill="#E01E5A"/>
+            <path d="M47.1 26.9A13.45 13.45 0 1 1 47.1 0h0v26.9z" fill="#36C5F0"/>
+            <path d="M47.1 33.7a13.45 13.45 0 0 1 0 26.9H13.45A13.45 13.45 0 0 1 13.45 33.7z" fill="#36C5F0"/>
+            <path d="M101.1 47.1a13.45 13.45 0 1 1 13.45 13.45H101.1z" fill="#2EB67D"/>
+            <path d="M94.3 47.1a13.45 13.45 0 0 1-26.9 0V13.45A13.45 13.45 0 1 1 94.3 13.45z" fill="#2EB67D"/>
+            <path d="M80.9 101.1a13.45 13.45 0 1 1-13.45 13.45V101.1z" fill="#ECB22E"/>
+            <path d="M80.9 94.3a13.45 13.45 0 0 1 0-26.9h33.7a13.45 13.45 0 1 1 0 26.9z" fill="#ECB22E"/>
+          </svg>
+          <span>Slack</span>
+        </div>
+        <div class="app">
+          <svg viewBox="0 0 128 128" aria-hidden="true">
+            <path fill="#F6F1E8" fill-rule="evenodd" d="M63.8 1.3C28.5 1.3 0 30 0 65.6c0 28.4 18.3 52.5 43.6 61 3.2.6 4.4-1.4 4.4-3.1 0-1.5-.1-6.6-.1-11.9-17.8 3.8-21.5-7.7-21.5-7.7-2.9-7.4-7.1-9.4-7.1-9.4-5.8-3.9.4-3.9.4-3.9 6.4.4 9.8 6.6 9.8 6.6 5.7 9.8 14.9 7 18.6 5.3.5-4.1 2.2-7 4-8.6-14.2-1.5-29.1-7-29.1-31.7 0-7 2.5-12.8 6.5-17.3-.6-1.6-2.9-8.2.6-17.1 0 0 5.4-1.7 17.5 6.6 5.2-1.4 10.6-2.1 16-2.1s10.9.7 16 2.1c12.1-8.3 17.5-6.6 17.5-6.6 3.5 8.8 1.3 15.5.6 17.1 4.1 4.5 6.6 10.3 6.6 17.3 0 24.7-14.9 30.2-29.2 31.7 1.8 1.6 3.5 4.8 3.5 9.9 0 7.2-.1 14.1-.1 16.1 0 1.7 1.2 3.8 4.4 3.1C109.2 118.1 127.5 94 127.5 65.6 127.6 30 99 1.3 63.8 1.3z"/>
+          </svg>
+          <span>GitHub</span>
+        </div>
+        <div class="app">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path fill="#F6F1E8" d="M4.2 3h11.4L20 6.7v13.6H7L4.2 17V3zm3.4 2.3v13.1l1.7.9h9.3V8.2l-2.5-2.9H7.6z"/>
+          </svg>
+          <span>Notion</span>
+        </div>
+        <div class="app">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="11" fill="#229ED9"/>
+            <path fill="#fff" d="M16.9 7.3 6.8 11.2c-.7.3-.7.7-.1.9l2.6.8 1 .3 5.3-3.4c.3-.2.5 0 .3.2l-4.3 3.9-.2 2.7c.2 0 .4-.1.5-.3l1.2-1.2 2.6 1.9c.5.3.8.1.9-.4l1.6-7.6c.2-.8-.3-1.1-.9-.9z"/>
+          </svg>
+          <span>Telegram</span>
+        </div>
+        <div class="app more">
+          <span>+995</span>
+          <span>more apps</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer">
+      <div class="footer-meta">
+        <span>OAuth</span>
+        <span>Human approval</span>
+        <span>Run ledger</span>
+      </div>
+      <div class="url">docs.flowra.dev/guides/sdk</div>
+    </div>
+  </div>
+</body>
+</html>

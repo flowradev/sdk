@@ -1,0 +1,94 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: Bump all packages (TypeScript, CLI, Python) then publish. Use none to publish the version already in the repo (first release or retry).
+        type: choice
+        required: true
+        default: patch
+        options:
+          - none
+          - patch
+          - minor
+          - major
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Resolve version
+        id: ver
+        run: |
+          if [ "${{ inputs.bump }}" = "none" ]; then
+            VERSION=$(python3 -c "import json; print(json.load(open('typescript/package.json'))['version'])")
+          else
+            VERSION=$(python3 scripts/bump-version.py "${{ inputs.bump }}")
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Publishing $VERSION (bump=${{ inputs.bump }})"
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+          always-auth: true
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Build TypeScript
+        working-directory: typescript
+        run: pnpm install --frozen-lockfile && pnpm build
+
+      - name: Test and build CLI
+        working-directory: cli
+        run: pnpm install --frozen-lockfile && pnpm test && pnpm build
+
+      - name: Build Python
+        working-directory: python
+        run: |
+          python -m pip install --upgrade build
+          python -m build
+
+      - name: Commit and tag
+        if: ${{ inputs.bump != 'none' }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add typescript/package.json cli/package.json python/pyproject.toml python/src/flowra/__init__.py
+          git commit -m "Release v${{ steps.ver.outputs.version }}"
+          git tag "v${{ steps.ver.outputs.version }}"
+          git push origin HEAD
+          git push origin "v${{ steps.ver.outputs.version }}"
+
+      - name: Publish npm
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          npm publish --access public --no-git-checks --prefix typescript
+          npm publish --access public --no-git-checks --prefix cli
+
+      - name: Publish PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: python/dist
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          skip-existing: true

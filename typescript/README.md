@@ -8,7 +8,7 @@ TypeScript SDK for the Flowra API.
 pnpm add @flowra/sdk
 ```
 
-Until the package is on npm, from this repository:
+From this repository:
 
 ```bash
 pnpm --dir typescript install

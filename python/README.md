@@ -4,11 +4,16 @@ Python SDK for the Flowra API. Stdlib only (no extra runtime deps). Requires Pyt
 
 ## Install
 
-Do **not** use `pip install flowra` from PyPI — that package is unrelated.
+PyPI name is `flowra-sdk`. Import stays `flowra`. Do **not** `pip install flowra` — that package is unrelated.
+
+```bash
+pip install flowra-sdk
+```
+
+From this repo:
 
 ```bash
 pip install -e "./python"
-pip install "git+https://github.com/flowradev/sdk.git#subdirectory=python"
 ```
 
 ## Quickstart
