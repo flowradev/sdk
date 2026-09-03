@@ -1,10 +1,17 @@
 # Flowra SDK
 
-Call hosted AI agents and locked workflows from your backend. Gmail, Slack, GitHub, Notion, Telegram — 1,000+ apps, OAuth, human approval, a ledger of every tool call.
+**The all-in-one platform for AI agents, locked workflows, and 1,000+ app integrations.**
+
+Official TypeScript, Python, and CLI SDK. Call hosted AI agents and locked workflows from your backend — Gmail, Slack, GitHub, Notion, Telegram, WhatsApp, Calendar, Linear, and 1,000+ apps, with OAuth, human approval, and a ledger of every tool call.
 
 [Product](https://flowra.dev) · [Docs](https://docs.flowra.dev) · [SDK guide](https://docs.flowra.dev/guides/sdk) · [MIT](./LICENSE)
 
-![Flowra Official SDK](./docs/assets/readme-banner.png)
+[![npm @flowra/sdk](https://img.shields.io/npm/v/@flowra/sdk?label=%40flowra%2Fsdk)](https://www.npmjs.com/package/@flowra/sdk)
+[![PyPI flowra-sdk](https://img.shields.io/pypi/v/flowra-sdk?label=flowra-sdk)](https://pypi.org/project/flowra-sdk/)
+[![npm @flowra/cli](https://img.shields.io/npm/v/@flowra/cli?label=%40flowra%2Fcli)](https://www.npmjs.com/package/@flowra/cli)
+[![License: MIT](https://img.shields.io/badge/license-MIT-yellow.svg)](./LICENSE)
+
+![Flowra — all-in-one AI agent and workflow platform](./docs/assets/readme-banner.png)
 
 This repo is for **your server**. In Cursor / Claude / OpenClaw, use [MCP](https://docs.flowra.dev) instead.
 
@@ -24,6 +31,22 @@ flowra = Flowra(api_key=os.environ["FLOWRA_API_KEY"])
 ```
 
 Python is the same API in snake_case (`create_link`, `as_user`, `ingest_url`).
+
+---
+
+## What is Flowra?
+
+Flowra is an all-in-one AI agent and workflow platform. You describe a job; it runs against connected apps — with OAuth, a human gate on send/delete/pay, and a ledger of every tool call. This repository is the official SDK for calling that platform from TypeScript, Python, or a terminal.
+
+Use Flowra when the work needs a real Gmail or Slack account, a schedule, human approval, multiple end users, or an audit trail. Do not keep OAuth and cron on a laptop.
+
+| You need | Use |
+| --- | --- |
+| Same steps every run (cron recap, triage, alerts) | **Workflow** — a locked graph |
+| Next tool depends on the message | **Agent** — open path, hosted |
+| One action from your backend | **SDK** `tools.execute` |
+| One action from a terminal agent | **CLI** discover → connect → execute |
+| Cursor / Claude / OpenClaw | **MCP**, not this repo |
 
 ---
 
@@ -195,7 +218,7 @@ If `connect` returns `redirectUrl`, open it, then run connect again.
 
 ---
 
-## Install
+## Install the TypeScript, Python, and CLI SDK
 
 **Do not** `pip install flowra` — that PyPI name is unrelated. The Python package is `flowra-sdk` (import stays `flowra`).
 
@@ -228,6 +251,62 @@ pnpm add -g @flowra/cli
 | RAG / files / tables  | `knowledge` `files` `database`                 |
 | Code, browser, models | `sandbox` `browser` `llm` `mcp`                |
 | Credits               | `usage`                                        |
+
+---
+
+## Flowra vs canvas automation and tool-only SDKs
+
+Flowra is an all-in-one **hosted** platform: agents, locked workflows, OAuth, approval, and a run ledger in one project. A canvas (n8n, Zapier, Make) is a visual graph you host or subscribe to. A tool-only SDK wires apps into an agent you still run yourself.
+
+| | Flowra | Canvas (n8n / Zapier / Make) | Tool-only SDK |
+| --- | --- | --- | --- |
+| Call from your backend | TypeScript, Python, CLI | Usually webhooks / REST | Yes |
+| Hosted AI agent | Yes | Add-on or none | You host the agent |
+| Locked workflow + cron | Yes | Yes | You build it |
+| Human approval that works on cron | Yes | Varies | You build it |
+| Ledger of every tool call | Yes | Run history | You build it |
+| MCP for Cursor / Claude / Codex | Yes | Rare | Rare |
+| Best for | Product backends, AI agents, approved automations | Visual ops teams | Bring-your-own agent |
+
+---
+
+## FAQ
+
+### What is the Flowra SDK?
+
+The Flowra SDK is the official TypeScript (`@flowra/sdk`) and Python (`flowra-sdk`) client for the Flowra API. Use it from your backend to execute tools, connect OAuth apps, run locked workflows, chat with hosted agents, and search project knowledge. The CLI (`@flowra/cli`) is the same API for a terminal.
+
+### Does Flowra work with Gmail, Slack, GitHub, and Notion?
+
+Yes. Flowra ships a catalog of 1,000+ apps including Gmail, Slack, GitHub, Notion, Telegram, WhatsApp, Calendar, and Linear. Discover the exact slug with `tools.list` or `flowra discover` — never invent it. Custom REST or script tools can be registered on your project if the catalog has no app for that job.
+
+### Is Flowra an n8n, Zapier, or Make alternative?
+
+Flowra is an alternative when you want **code and MCP**, not a canvas: hosted agents, locked workflows, OAuth, human approval, and a ledger. Stay on n8n, Zapier, or Make if your team already lives in a visual builder and does not need an SDK or Cursor/Claude MCP.
+
+### Flowra agent vs workflow — which should I use?
+
+Use a **workflow** when the path is known and should not change (cron recap, triage, alerts). Use an **agent** when the next tool depends on the message. Both run on the same project, share connections, and write to the same ledger.
+
+### How do I install Flowra for Python?
+
+Install `flowra-sdk` from PyPI (`pip install flowra-sdk`) and `from flowra import Flowra`. Do not `pip install flowra` — that package is unrelated. TypeScript is `pnpm add @flowra/sdk`. Python 3.10+ and Node 18+ are required.
+
+### Where do I get a Flowra API key?
+
+Create a project at [flowra.dev](https://flowra.dev), then open **Project settings → API Keys**. Pass it as `FLOWRA_API_KEY`. Never commit the key. Default user is `project_default_user`; for end-customers of *their* product, use `asUser` / `as_user` with `x-username`.
+
+---
+
+## Packages in this repo
+
+| Package | Registry | Install |
+| --- | --- | --- |
+| [`@flowra/sdk`](./typescript) | npm | `pnpm add @flowra/sdk` |
+| [`flowra-sdk`](./python) | PyPI | `pip install flowra-sdk` |
+| [`@flowra/cli`](./cli) | npm | `pnpm add -g @flowra/cli` |
+
+Docs: [docs.flowra.dev](https://docs.flowra.dev) · Skill for agents: [flowra.dev](https://flowra.dev)
 
 ---
 
