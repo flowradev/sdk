@@ -17,4 +17,4 @@ __all__ = [
     "extract_stream_usage",
     "parse_sse_chunk",
 ]
-__version__ = "0.1.0"
+__version__ = "0.1.1"
