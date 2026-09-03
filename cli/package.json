@@ -14,7 +14,7 @@
   "scripts": {
     "build": "tsc && chmod +x dist/index.js",
     "flowra": "node dist/index.js",
-    "test": "node --experimental-strip-types --test src/args.test.ts src/config.test.ts src/redact.test.ts src/http.test.ts",
+    "test": "npm run build && node --experimental-strip-types --test src/args.test.ts src/banner.test.ts src/style.test.ts src/config.test.ts src/redact.test.ts src/http.test.ts",
     "prepublishOnly": "npm run build"
   },
   "engines": {

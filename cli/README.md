@@ -11,6 +11,7 @@ pnpm add -g @flowra/cli
 flowra --help
 ```
 
+Interactive shells print a cyan→green Flowra ASCII banner on stderr, colored help, step/✓ status lines, and syntax-colored JSON on stdout. Piped / non-TTY / `NO_COLOR` stays plain so agents still get clean JSON.
 From this repository:
 
 ```bash

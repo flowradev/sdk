@@ -94,22 +94,3 @@ export function parseArgv(argv: string[]): ParsedCli {
   const command = positional[0] ?? null;
   return { command, positional: positional.slice(1), flags };
 }
-
-export const USAGE = `Usage: flowra <command>
-
-Terminal door for a Flowra project. MCP is still the default for Cursor/OpenClaw.
-Do not print API keys. JSON on stdout.
-
-Commands:
-  login [--key <sk>] [--no-wait]   Save a project API key (Dashboard → API Keys)
-  whoami                           Confirm the key without printing it
-  discover <use case>              FLOWRA_DISCOVER_TOOLS (never invent slugs)
-  connect <toolkit> [--wait]       FLOWRA_MANAGE_CONNECTIONS (stop on redirectUrl)
-  execute <TOOL_SLUG> -d '{...}'   Run a discovered slug
-
-Global:
-  --base-url <url>   Default https://flowra.dev
-  --username <id>    x-username (default project_default_user)
-  --session-id <id>  Reuse DISCOVER session.id
-  --help
-`;

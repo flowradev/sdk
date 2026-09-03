@@ -1,9 +1,11 @@
 #!/usr/bin/env node
-import { parseArgv, USAGE } from './args.js';
+import { parseArgv } from './args.js';
+import { printBanner } from './banner.js';
 import { login, whoami, discover, connect, executeTool } from './commands.js';
+import { formatUsage } from './help.js';
 import { fail, printJson } from './io.js';
 
-const VERSION = '0.1.0';
+const VERSION = '0.1.1';
 
 async function main(): Promise<void> {
   let parsed;
@@ -15,12 +17,19 @@ async function main(): Promise<void> {
 
   const { command, positional, flags } = parsed;
   if (flags.version) {
+    printBanner();
     printJson({ name: '@flowra/cli', version: VERSION, bin: 'flowra' });
     return;
   }
   if (flags.help || !command) {
-    process.stdout.write(USAGE);
+    printBanner();
+    process.stdout.write(formatUsage(process.stdout));
     return;
+  }
+
+  // Brand for interactive humans; stdout stays JSON for agents.
+  if (command === 'login' || command === 'whoami') {
+    printBanner();
   }
 
   try {

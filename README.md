@@ -13,7 +13,7 @@ Official TypeScript, Python, and CLI SDK. Call hosted AI agents and locked workf
 
 ![Flowra — all-in-one AI agent and workflow platform](./docs/assets/readme-banner.png)
 
-This repo is for **your server**. In Cursor / Claude / OpenClaw, use [MCP](https://docs.flowra.dev) instead.
+This repo is for **your server**. In Cursor / Claude / OpenClaw, install the [agent skill](#agent-skill) and connect [MCP](https://docs.flowra.dev).
 
 Get a project API key: [Dashboard](https://flowra.dev) → Project settings → API Keys.
 
@@ -46,7 +46,7 @@ Use Flowra when the work needs a real Gmail or Slack account, a schedule, human 
 | Next tool depends on the message | **Agent** — open path, hosted |
 | One action from your backend | **SDK** `tools.execute` |
 | One action from a terminal agent | **CLI** discover → connect → execute |
-| Cursor / Claude / OpenClaw | **MCP**, not this repo |
+| Cursor / Claude / OpenClaw | **Skill** + **MCP** |
 
 ---
 
@@ -240,6 +240,14 @@ pip install flowra-sdk
 pnpm add -g @flowra/cli
 ```
 
+**Agent skill** (Cursor, Claude, Codex, OpenClaw, Hermes)
+
+```bash
+npx skills add flowradev/skills --skill flowra
+```
+
+Then connect [MCP](https://docs.flowra.dev). Directory: [skills.sh/flowradev/skills/flowra](https://skills.sh/flowradev/skills/flowra).
+
 ---
 
 ## Map of the client
@@ -306,7 +314,7 @@ Create a project at [flowra.dev](https://flowra.dev), then open **Project settin
 | [`flowra-sdk`](./python) | PyPI | `pip install flowra-sdk` |
 | [`@flowra/cli`](./cli) | npm | `pnpm add -g @flowra/cli` |
 
-Docs: [docs.flowra.dev](https://docs.flowra.dev) · Skill for agents: [flowra.dev](https://flowra.dev)
+Docs: [docs.flowra.dev](https://docs.flowra.dev) · Agent skill: `npx skills add flowradev/skills --skill flowra`
 
 ---
 

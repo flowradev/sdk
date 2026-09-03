@@ -4,6 +4,7 @@ import { loadConfig, saveConfig, resolveAuth } from './config.js';
 import { createClient, fail, printJson } from './io.js';
 import { executeData, isToolFailure, sessionIdFrom } from './payload.js';
 import { redactValue } from './redact.js';
+import { colorEnabled, humOk, humStep, humWarn, palette } from './style.js';
 import type { Flags } from './args.js';
 
 const DISCOVER_SLUG = 'FLOWRA_DISCOVER_TOOLS';
@@ -32,9 +33,10 @@ async function promptKey(): Promise<string> {
   if (!input.isTTY) {
     throw new Error('No TTY. Use `flowra login --key <sk>` or FLOWRA_API_KEY, or `--no-wait` for the dashboard URL.');
   }
+  const c = palette(colorEnabled(output));
   const rl = createInterface({ input, output });
   try {
-    const value = (await rl.question('Paste project API key: ')).trim();
+    const value = (await rl.question(`${c.brightCyan('▸')} Paste project API key: `)).trim();
     if (!value) {
       throw new Error('Empty key.');
     }
@@ -53,6 +55,7 @@ export async function login(flags: Flags): Promise<void> {
   const username = flags.username || process.env.FLOWRA_USERNAME || existing.username || 'project_default_user';
 
   if (flags.noWait && !flags.key && !process.env.FLOWRA_API_KEY) {
+    humWarn('awaiting key', KEYS_HINT);
     printJson({
       status: 'awaiting_key',
       dashboardUrl: dashboardUrl(baseUrl),
@@ -62,12 +65,14 @@ export async function login(flags: Flags): Promise<void> {
     return;
   }
 
+  humStep('login', baseUrl);
   const apiKey = (flags.key || process.env.FLOWRA_API_KEY || (await promptKey())).trim();
   const next = { ...existing, apiKey, baseUrl, username };
   await saveConfig(next);
 
   const client = await createClient(flags, next);
   const profile = redactValue(await client.getProfile());
+  humOk('saved', username);
   printJson({
     status: 'ok',
     saved: true,
@@ -78,6 +83,7 @@ export async function login(flags: Flags): Promise<void> {
 }
 
 export async function whoami(flags: Flags): Promise<void> {
+  humStep('whoami');
   const config = await loadConfig();
   const auth = resolveAuth(config, flags);
   const client = await createClient(flags, config);
@@ -88,6 +94,7 @@ export async function whoami(flags: Flags): Promise<void> {
   } catch {
     balance = null;
   }
+  humOk(auth.username, auth.baseUrl);
   printJson({
     status: 'ok',
     username: auth.username,
@@ -99,6 +106,7 @@ export async function whoami(flags: Flags): Promise<void> {
 }
 
 export async function discover(useCase: string, flags: Flags): Promise<void> {
+  humStep('discover', useCase);
   const config = await loadConfig();
   const client = await createClient(flags, config);
   const raw = await client.execute(DISCOVER_SLUG, {
@@ -114,13 +122,17 @@ export async function discover(useCase: string, flags: Flags): Promise<void> {
   const data = executeData(raw);
   const sessionId = sessionIdFrom(data, flags.sessionId || config.lastSessionId);
   await persistSession(sessionId);
-  printJson(redactValue({ ...data, sessionId }));
   if (isToolFailure(data)) {
+    humWarn('discover failed');
+    printJson(redactValue({ ...data, sessionId }));
     process.exit(2);
   }
+  humOk('discover', sessionId ? `session ${sessionId}` : undefined);
+  printJson(redactValue({ ...data, sessionId }));
 }
 
 export async function connect(toolkit: string, flags: Flags): Promise<void> {
+  humStep('connect', toolkit);
   const config = await loadConfig();
   const client = await createClient(flags, config);
   const sessionId = flags.sessionId || config.lastSessionId;
@@ -147,6 +159,7 @@ export async function connect(toolkit: string, flags: Flags): Promise<void> {
         .map((row) => (row && typeof row === 'object' ? (row as { status?: string }).status : undefined))
         .filter(Boolean);
       if (statuses.some((status) => status === 'initiated')) {
+        humWarn('waiting for OAuth', 're-checking…');
         await new Promise((resolve) => setTimeout(resolve, 3000));
         data = await once();
         continue;
@@ -155,10 +168,14 @@ export async function connect(toolkit: string, flags: Flags): Promise<void> {
     }
   }
 
-  printJson(redactValue({ ...data, sessionId: sessionIdFrom(data, sessionId) }));
+  const out = redactValue({ ...data, sessionId: sessionIdFrom(data, sessionId) });
   if (isToolFailure(data)) {
+    humWarn('connect failed');
+    printJson(out);
     process.exit(2);
   }
+  humOk('connect', toolkit);
+  printJson(out);
 }
 
 export async function executeTool(slug: string, flags: Flags): Promise<void> {
@@ -177,6 +194,7 @@ export async function executeTool(slug: string, flags: Flags): Promise<void> {
       fail('Invalid JSON for --data');
     }
   }
+  humStep('execute', slug);
   const config = await loadConfig();
   const sessionId = flags.sessionId || config.lastSessionId;
   const client = await createClient(flags, config);
@@ -185,8 +203,12 @@ export async function executeTool(slug: string, flags: Flags): Promise<void> {
     metaSessionId: sessionId,
   });
   const data = executeData(raw);
-  printJson(redactValue({ ...data, sessionId: sessionIdFrom(data, sessionId) }));
+  const out = redactValue({ ...data, sessionId: sessionIdFrom(data, sessionId) });
   if (isToolFailure(data)) {
+    humWarn('execute failed', slug);
+    printJson(out);
     process.exit(2);
   }
+  humOk('execute', slug);
+  printJson(out);
 }
