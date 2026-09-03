@@ -1,5 +1,3 @@
-![Flowra](./docs/assets/logo.png)
-
 # Flowra SDK
 
 Call hosted AI agents and locked workflows from your backend. Gmail, Slack, GitHub, Notion, Telegram — 1,000+ apps, OAuth, human approval, a ledger of every tool call.
