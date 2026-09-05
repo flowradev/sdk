@@ -247,6 +247,13 @@ export class Flowra {
 
     registrySearch: async (query: SkillsControllerRegistrySearchData['query']) =>
       unwrapData(await api.skillsControllerRegistrySearch({ client: this.client, query })),
+
+    registrySync: async (id: string) =>
+      unwrapData(
+        await this.client.post({
+          url: `/api/v1/skills/registry/sync/${id}`,
+        }),
+      ),
   };
 
   readonly workflows = {

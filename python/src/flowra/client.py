@@ -189,6 +189,9 @@ class _Skills:
             json_body=dict(body),
         )
 
+    def registry_sync(self, skill_id: str) -> Any:
+        return self._http.request("POST", f"/api/v1/skills/registry/sync/{skill_id}")
+
 
 class _Workflows:
     def __init__(self, http: HttpClient) -> None:
