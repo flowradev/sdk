@@ -4,6 +4,10 @@ import path from 'node:path';
 
 export type FlowraCliConfig = {
   apiKey?: string;
+  accessToken?: string;
+  refreshToken?: string;
+  clientId?: string;
+  tokenExpiresAt?: number;
   baseUrl?: string;
   username?: string;
   lastSessionId?: string;
@@ -35,22 +39,46 @@ export async function saveConfig(next: FlowraCliConfig, home = homedir()): Promi
   await chmod(file, 0o600);
 }
 
+export type ResolvedAuth = {
+  apiKey?: string;
+  accessToken?: string;
+  refreshToken?: string;
+  clientId?: string;
+  tokenExpiresAt?: number;
+  baseUrl: string;
+  username: string;
+  source: 'env' | 'oauth' | 'config';
+};
+
 export function resolveAuth(
   config: FlowraCliConfig,
   flags: { baseUrl?: string; username?: string },
-): { apiKey: string; baseUrl: string; username: string } {
-  const apiKey = (process.env.FLOWRA_API_KEY || config.apiKey || '').trim();
-  if (!apiKey) {
-    throw new Error(
-      'No API key. Run `flowra login --no-wait`, then `flowra login --key <sk>` or set FLOWRA_API_KEY.',
-    );
+): ResolvedAuth {
+  const envKey = (process.env.FLOWRA_API_KEY || '').trim();
+  const fileKey = (config.apiKey || '').trim();
+  const accessToken = (config.accessToken || '').trim();
+  const baseUrl = (flags.baseUrl || process.env.FLOWRA_BASE_URL || config.baseUrl || 'https://flowra.dev').replace(
+    /\/$/,
+    '',
+  );
+  const username = flags.username || process.env.FLOWRA_USERNAME || config.username || 'project_default_user';
+
+  if (envKey) {
+    return { apiKey: envKey, baseUrl, username, source: 'env' };
   }
-  return {
-    apiKey,
-    baseUrl: (flags.baseUrl || process.env.FLOWRA_BASE_URL || config.baseUrl || 'https://flowra.dev').replace(
-      /\/$/,
-      '',
-    ),
-    username: flags.username || process.env.FLOWRA_USERNAME || config.username || 'project_default_user',
-  };
+  if (accessToken.startsWith('mcp_at_')) {
+    return {
+      accessToken,
+      refreshToken: (config.refreshToken || '').trim() || undefined,
+      clientId: (config.clientId || '').trim() || undefined,
+      tokenExpiresAt: config.tokenExpiresAt,
+      baseUrl,
+      username,
+      source: 'oauth',
+    };
+  }
+  if (fileKey) {
+    return { apiKey: fileKey, baseUrl, username, source: 'config' };
+  }
+  throw new Error('Not signed in. Run `flowra login` (browser) or `flowra login --key <sk>` / FLOWRA_API_KEY.');
 }

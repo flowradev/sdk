@@ -1,6 +1,6 @@
 # @flowra/cli
 
-Thin terminal door for a Flowra **project**. Prefer MCP for Cursor / OpenClaw / Claude. Use this CLI when the agent can run shell commands and MCP is not connected.
+Thin terminal door for a Flowra **project**. Prefer MCP for Cursor / OpenClaw / Claude (`https://mcp.flowra.dev/mcp`, OAuth, no headers). The CLI uses the same sign-in when you run `flowra login`. Use this CLI when the agent can run shell commands and MCP is not connected.
 
 Never invent tool slugs. Typical loop: **discover → connect → execute**.
 
@@ -26,13 +26,15 @@ Calls the same public REST as `@flowra/sdk` (`POST /api/v1/tools/execute/:slug`)
 
 ## Auth
 
-Project API key from Dashboard → Project settings → API Keys. Stored in `~/.flowra/config.json` (mode `0600`). `FLOWRA_API_KEY` overrides the file. The CLI never prints the key.
+`flowra login` opens the same Flowra sign-in as MCP (Google, GitHub, or email). You pick a project. Tokens stay in `~/.flowra/config.json` (mode `0600`). The CLI never prints them.
 
 ```bash
-flowra login --no-wait          # JSON with dashboardUrl — share with the user
-flowra login --key sk_...       # save; then whoami
+flowra login                    # browser OAuth
+flowra login --key sk_...       # API key instead (CI)
 flowra whoami
 ```
+
+`FLOWRA_API_KEY` overrides a saved session. `--no-wait` prints the dashboard URL for agents that cannot open a browser.
 
 Optional: `FLOWRA_BASE_URL`, `FLOWRA_USERNAME` (`x-username`, default `project_default_user`), `FLOWRA_HOME`.
 

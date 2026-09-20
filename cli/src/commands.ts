@@ -2,6 +2,7 @@ import { createInterface } from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
 import { loadConfig, saveConfig, resolveAuth } from './config.js';
 import { createClient, fail, printJson } from './io.js';
+import { loginWithMcpOAuth, openAuthorizeUrl } from './oauth.js';
 import { executeData, isToolFailure, sessionIdFrom } from './payload.js';
 import { redactValue } from './redact.js';
 import { colorEnabled, humOk, humStep, humWarn, palette } from './style.js';
@@ -55,19 +56,59 @@ export async function login(flags: Flags): Promise<void> {
   const username = flags.username || process.env.FLOWRA_USERNAME || existing.username || 'project_default_user';
 
   if (flags.noWait && !flags.key && !process.env.FLOWRA_API_KEY) {
-    humWarn('awaiting key', KEYS_HINT);
+    humWarn('awaiting login', 'run `flowra login` on a machine with a browser, or paste a key');
     printJson({
-      status: 'awaiting_key',
+      status: 'awaiting_login',
       dashboardUrl: dashboardUrl(baseUrl),
       keysPath: KEYS_HINT,
-      next: 'flowra login --key <paste>   # or export FLOWRA_API_KEY',
+      next: 'flowra login                 # browser OAuth (same as MCP)\nflowra login --key <paste>   # or export FLOWRA_API_KEY',
     });
     return;
   }
 
   humStep('login', baseUrl);
+
+  if (!flags.key && !process.env.FLOWRA_API_KEY) {
+    const started = await loginWithMcpOAuth(baseUrl);
+    humWarn('open browser', started.authorizeUrl);
+    openAuthorizeUrl(started.authorizeUrl);
+    const tokens = await started.tokens;
+    const next = {
+      ...existing,
+      apiKey: undefined,
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+      clientId: tokens.clientId,
+      tokenExpiresAt: tokens.tokenExpiresAt,
+      baseUrl,
+      username,
+    };
+    await saveConfig(next);
+    const client = await createClient(flags, next);
+    const profile = redactValue(await client.getProfile());
+    humOk('saved', 'oauth');
+    printJson({
+      status: 'ok',
+      saved: true,
+      auth: 'oauth',
+      username,
+      baseUrl,
+      profile,
+    });
+    return;
+  }
+
   const apiKey = (flags.key || process.env.FLOWRA_API_KEY || (await promptKey())).trim();
-  const next = { ...existing, apiKey, baseUrl, username };
+  const next = {
+    ...existing,
+    apiKey,
+    accessToken: undefined,
+    refreshToken: undefined,
+    clientId: undefined,
+    tokenExpiresAt: undefined,
+    baseUrl,
+    username,
+  };
   await saveConfig(next);
 
   const client = await createClient(flags, next);
@@ -76,6 +117,7 @@ export async function login(flags: Flags): Promise<void> {
   printJson({
     status: 'ok',
     saved: true,
+    auth: 'api_key',
     username,
     baseUrl,
     profile,
@@ -99,7 +141,7 @@ export async function whoami(flags: Flags): Promise<void> {
     status: 'ok',
     username: auth.username,
     baseUrl: auth.baseUrl,
-    keySource: process.env.FLOWRA_API_KEY ? 'env' : 'config',
+    keySource: auth.source,
     profile,
     balance,
   });

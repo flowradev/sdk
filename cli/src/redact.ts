@@ -1,4 +1,4 @@
-const SECRET_KEY = /(api[_-]?key|access[_-]?token|secret|password|authorization|cookie)/i;
+const SECRET_KEY = /(api[_-]?key|access[_-]?token|refresh[_-]?token|secret|password|authorization|cookie)/i;
 
 export function redactValue(value: unknown): unknown {
   if (Array.isArray(value)) {

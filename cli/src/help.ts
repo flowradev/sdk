@@ -7,8 +7,8 @@ Terminal door for a Flowra project. MCP is still the default for Cursor/OpenClaw
 Do not print API keys. JSON on stdout.
 
 Commands:
-  login [--key <sk>] [--no-wait]   Save a project API key (Dashboard → API Keys)
-  whoami                           Confirm the key without printing it
+  login [--key <sk>] [--no-wait]   Browser OAuth (same as MCP), or save an API key
+  whoami                           Confirm the session without printing tokens
   discover <use case>              FLOWRA_DISCOVER_TOOLS (never invent slugs)
   connect <toolkit> [--wait]       FLOWRA_MANAGE_CONNECTIONS (stop on redirectUrl)
   execute <TOOL_SLUG> -d '{...}'   Run a discovered slug
@@ -26,12 +26,12 @@ const COMMANDS: Cmd[] = [
   {
     name: 'login',
     usage: 'login [--key <sk>] [--no-wait]',
-    blurb: 'Save a project API key (Dashboard → API Keys)',
+    blurb: 'Browser OAuth (same as MCP), or save an API key',
   },
   {
     name: 'whoami',
     usage: 'whoami',
-    blurb: 'Confirm the key without printing it',
+    blurb: 'Confirm the session without printing tokens',
   },
   {
     name: 'discover',
@@ -59,7 +59,8 @@ const GLOBALS: Array<{ flag: string; blurb: string }> = [
 ];
 
 const EXAMPLES = [
-  'flowra login --no-wait',
+  'flowra login',
+  'flowra login --key sk_...',
   'flowra whoami',
   'flowra discover "Gmail list recent inbox emails"',
   'flowra connect gmail',

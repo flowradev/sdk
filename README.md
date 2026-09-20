@@ -13,7 +13,7 @@ Official TypeScript, Python, and CLI SDK. Call hosted AI agents and locked workf
 
 ![Flowra — all-in-one AI agent and workflow platform](./docs/assets/readme-banner.png)
 
-This repo is for **your server**. In Cursor / Claude / OpenClaw, install the [agent skill](#agent-skill) and connect [MCP](https://docs.flowra.dev).
+This repo is for **your server**. In Cursor / Claude / OpenClaw, install the [agent skill](#agent-skill) and add `https://mcp.flowra.dev/mcp` with no headers (OAuth). Details: [MCP](https://docs.flowra.dev/guides/mcp).
 
 Get a project API key: [Dashboard](https://flowra.dev) → Project settings → API Keys.
 
@@ -208,7 +208,7 @@ Default user is `project_default_user`. Never pass a project UUID as the usernam
 When MCP isn't connected: **discover → connect → execute**. Never invent the slug.
 
 ```bash
-flowra login --key "$FLOWRA_API_KEY"
+flowra login
 flowra discover "Gmail list recent inbox emails"
 flowra connect gmail
 flowra execute GMAIL_SEND_EMAIL -d '{"recipient_email":"you@example.com","subject":"Hi","body":"Test"}'
@@ -246,7 +246,7 @@ pnpm add -g @flowra/cli
 npx skills add flowradev/skills --skill flowra
 ```
 
-Then connect [MCP](https://docs.flowra.dev). Directory: [skills.sh/flowradev/skills/flowra](https://skills.sh/flowradev/skills/flowra).
+Then add `https://mcp.flowra.dev/mcp` (OAuth, no headers). Directory: [skills.sh/flowradev/skills/flowra](https://skills.sh/flowradev/skills/flowra).
 
 ---
 

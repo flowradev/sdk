@@ -27,11 +27,34 @@ test('saveConfig writes JSON and resolveAuth prefers env key', async () => {
   }
 });
 
-test('resolveAuth throws without a key', async () => {
+test('resolveAuth prefers saved MCP OAuth over a missing key', () => {
   const previous = process.env.FLOWRA_API_KEY;
   delete process.env.FLOWRA_API_KEY;
   try {
-    assert.throws(() => resolveAuth({}, {}), /No API key/);
+    const auth = resolveAuth(
+      {
+        accessToken: 'mcp_at_saved',
+        refreshToken: 'mcp_rt_saved',
+        clientId: 'mcp_cli_1',
+        baseUrl: 'https://flowra.dev',
+      },
+      {},
+    );
+    assert.equal(auth.source, 'oauth');
+    assert.equal(auth.accessToken, 'mcp_at_saved');
+    assert.equal(auth.apiKey, undefined);
+  } finally {
+    if (previous !== undefined) {
+      process.env.FLOWRA_API_KEY = previous;
+    }
+  }
+});
+
+test('resolveAuth throws without a key or OAuth token', async () => {
+  const previous = process.env.FLOWRA_API_KEY;
+  delete process.env.FLOWRA_API_KEY;
+  try {
+    assert.throws(() => resolveAuth({}, {}), /Not signed in/);
   } finally {
     if (previous !== undefined) {
       process.env.FLOWRA_API_KEY = previous;
