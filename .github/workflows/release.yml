@@ -79,6 +79,16 @@ jobs:
           git push origin HEAD
           git push origin "v${{ steps.ver.outputs.version }}"
 
+      - name: Create GitHub Release
+        if: ${{ inputs.bump != 'none' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "v${{ steps.ver.outputs.version }}" \
+            --title "v${{ steps.ver.outputs.version }}" \
+            --notes "Release v${{ steps.ver.outputs.version }}" \
+            --verify-tag
+
       - name: Publish npm
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
