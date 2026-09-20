@@ -1006,14 +1006,6 @@ export class Flowra {
           query,
         }),
       ),
-
-    completeConnection: async (sessionId: string) =>
-      unwrapData(
-        await api.browserControllerCompleteBrowserConnection({
-          client: this.client,
-          path: { sessionId },
-        }),
-      ),
   };
 
   readonly usage = {

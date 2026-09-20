@@ -921,12 +921,6 @@ class _Browser:
             query=query,
         )
 
-    def complete_connection(self, session_id: str) -> Any:
-        return self._http.request(
-            "POST",
-            f"/api/v1/browser/sessions/{session_id}/complete-browser-connection",
-        )
-
 
 class _Usage:
     def __init__(self, http: HttpClient) -> None:
