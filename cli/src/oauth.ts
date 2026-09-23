@@ -125,6 +125,7 @@ export async function loginWithMcpOAuth(baseUrl: string): Promise<{ authorizeUrl
 
   const registered = await fetch(urls.register, {
     method: 'POST',
+    redirect: 'manual',
     headers: { accept: 'application/json', 'content-type': 'application/json' },
     body: JSON.stringify({
       redirect_uris: [redirectUri],
@@ -135,7 +136,13 @@ export async function loginWithMcpOAuth(baseUrl: string): Promise<{ authorizeUrl
   const created = await readJson(registered);
   if (!registered.ok || typeof created.client_id !== 'string') {
     await loopback.close();
-    throw new Error('Could not register the CLI OAuth client');
+    const detail =
+      typeof created.error_description === 'string'
+        ? created.error_description
+        : typeof created.error === 'string'
+          ? created.error
+          : `HTTP ${registered.status}`;
+    throw new Error(`Could not register the CLI OAuth client (${detail})`);
   }
   const clientId = created.client_id;
 
@@ -152,6 +159,7 @@ export async function loginWithMcpOAuth(baseUrl: string): Promise<{ authorizeUrl
   const tokens = loopback.wait.then(async ({ code }) => {
     const exchanged = await fetch(urls.token, {
       method: 'POST',
+      redirect: 'manual',
       headers: { accept: 'application/json', 'content-type': 'application/json' },
       body: JSON.stringify({
         grant_type: 'authorization_code',
@@ -180,6 +188,7 @@ export async function refreshMcpOAuth(baseUrl: string, tokens: McpOAuthTokens): 
   const urls = mcpOAuthEndpoints(baseUrl);
   const exchanged = await fetch(urls.token, {
     method: 'POST',
+    redirect: 'manual',
     headers: { accept: 'application/json', 'content-type': 'application/json' },
     body: JSON.stringify({
       grant_type: 'refresh_token',

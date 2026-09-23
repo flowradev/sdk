@@ -4,6 +4,7 @@ import { mcpOAuthEndpoints } from '../dist/oauth-urls.js';
 
 test('hosted Flowra uses mcp.flowra.dev OAuth', () => {
   const urls = mcpOAuthEndpoints('https://flowra.dev');
+  assert.equal(urls.register, 'https://mcp.flowra.dev/register');
   assert.equal(urls.authorize, 'https://mcp.flowra.dev/authorize');
   assert.equal(urls.token, 'https://mcp.flowra.dev/token');
   assert.equal(urls.resource, 'https://mcp.flowra.dev/mcp');
